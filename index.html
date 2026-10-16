@@ -479,16 +479,15 @@ function analyzeNational() {
 
   let html = '';
   if (hasZZ || hasKF) {
-    // 经过郑州/开封，推荐在绿站中转蹭绕城免费
     html = `
     <div class="result-card result-free">
       <div class="result-header">
-        <div class="result-title">✅ 可蹭郑州绕城免费段</div>
-        <span class="badge badge-green">建议中转</span>
+        <div class="result-title">✅ 路线经过郑州都市圈</div>
+        <span class="badge badge-green">可蹭免费段</span>
       </div>
-      <div class="result-reason">你的路线经过郑州都市圈，豫A/V ETC 小客车可在郑州绕城段免费通行。</div>
+      <div class="result-reason">豫A/V ETC 小客车在郑州绕城段上下站均可免费。具体在哪个站下高速再上最划算，取决于你的实际行进方向——建议先看下方导航路线，再对照"规则"页里的 9 个绿色换乘站选就近的那个下高速重刷 ETC。</div>
       <div class="plan-steps">
-        <div class="step">🔁 推荐在 <b style="color:#b45309">柳林站 / 东三环北站</b> 下高速再上，可省郑州绕城段费（约 ¥15~30）。</div>
+        <div class="step">🔁 9 个绿色换乘站：花园路 / 柳林 / 东三环北 / 郑州新区 / 圃田 / 航海路 / 南三环 / 郑庵 / 姚家。</div>
         <div class="transfer-note">操作：下高速出 ETC 后原地掉头，重新刷 ETC 进站，全程约 3~5 分钟。</div>
       </div>
     </div>`;
