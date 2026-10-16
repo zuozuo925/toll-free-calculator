@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#0B5FD0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="高速免费避坑">
-<title>豫A/豫V 高速免费避坑计算器</title>
+<meta name="apple-mobile-web-app-title" content="河南高速免费查询">
+<title>河南高速免费查询工具</title>
 <link rel="apple-touch-icon" href="app_icon.png">
 <link rel="icon" type="image/png" href="app_icon.png">
 <style>
@@ -39,17 +39,9 @@ body {
   background: rgba(245, 247, 251, 0.72);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  display: flex; justify-content: space-between; align-items: center;
   border-bottom: 0.5px solid rgba(0,0,0,0.06);
 }
 .navbar h1 { font-size: 17px; font-weight: 700; }
-.navbar .icon-btn {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: var(--card-bg); border: none;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 18px;
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-}
 
 .city-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
 .city-tab {
@@ -130,7 +122,7 @@ body {
 .modal {
   width: 100%; max-width: 480px; margin: 0 auto;
   background: #fff; border-radius: 24px 24px 0 0;
-  max-height: 80vh; display: flex; flex-direction: column;
+  max-height: 85vh; display: flex; flex-direction: column;
   animation: slideUp 0.25s ease-out;
 }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -145,7 +137,7 @@ body {
   border: 1px solid #e5e7eb; border-radius: 12px;
   font-size: 15px; outline: none;
 }
-.modal-list { overflow-y: auto; padding: 0 16px 20px; }
+.modal-list { overflow-y: auto; padding: 0 16px 20px; flex: 1; }
 .group-title { font-size: 12px; color: var(--text-secondary); margin: 12px 0 6px; font-weight: 600; }
 .station-option {
   padding: 12px; border-radius: 12px; cursor: pointer;
@@ -153,31 +145,8 @@ body {
 }
 .station-option:active { background: #f3f4f6; }
 
-.theme-panel {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: #fff; border-radius: 24px 24px 0 0;
-  padding: 20px; z-index: 300; display: none; max-width: 480px; margin: 0 auto;
-}
-.theme-panel.show { display: block; }
-.theme-panel h3 { font-size: 16px; margin-bottom: 16px; }
-.theme-row { display: flex; gap: 12px; flex-wrap: wrap; }
-.theme-swatch {
-  width: 56px; height: 56px; border-radius: 16px; cursor: pointer;
-  border: 3px solid transparent; transition: all 0.2s;
-}
-.theme-swatch.active { border-color: #111827; transform: scale(1.05); }
-
-/* 反向查询 */
-.reverse-section { margin-bottom: 16px; }
-.reverse-pick {
-  background: var(--card-bg); border: 1px solid var(--card-border);
-  border-radius: 16px; padding: 14px 16px; margin-bottom: 12px;
-  cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-}
-.reverse-pick .hint { font-size: 13px; color: var(--text-secondary); }
-.reverse-group { margin-bottom: 12px; }
-.reverse-group h4 { font-size: 14px; margin-bottom: 8px; color: var(--text-secondary); }
-.reverse-stations { display: flex; flex-wrap: wrap; gap: 6px; }
+/* 反向查询弹窗 */
+.reverse-stations { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .reverse-chip {
   padding: 8px 12px; border-radius: 10px; font-size: 13px;
   background: var(--card-bg); border: 1px solid var(--card-border);
@@ -185,9 +154,15 @@ body {
 }
 .reverse-chip:active { transform: scale(0.96); background: var(--theme-primary-soft); }
 .reverse-chip.dim { opacity: 0.6; }
-.empty { text-align: center; color: var(--text-secondary); padding: 40px 20px; font-size: 14px; }
+.reverse-group { margin-bottom: 16px; }
+.reverse-group h4 { font-size: 14px; margin-bottom: 4px; color: var(--text-secondary); }
+.reverse-pick {
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 14px; padding: 14px 16px; margin-bottom: 12px;
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+}
 
-/* iOS 风格确认弹窗 */
+/* iOS 弹窗 */
 .ios-dialog-mask {
   position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 400;
   display: none; align-items: center; justify-content: center;
@@ -195,14 +170,14 @@ body {
 }
 .ios-dialog-mask.show { display: flex; }
 .ios-dialog {
-  width: 82%; max-width: 320px; background: rgba(255,255,255,0.92);
+  width: 82%; max-width: 340px; background: rgba(255,255,255,0.92);
   border-radius: 16px; overflow: hidden;
   backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
   animation: pop 0.2s ease-out;
 }
 @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .ios-dialog-title { padding: 20px 16px 8px; font-size: 16px; font-weight: 700; text-align: center; }
-.ios-dialog-msg { padding: 0 16px 20px; font-size: 14px; color: #374151; text-align: center; line-height: 1.6; white-space: pre-wrap; }
+.ios-dialog-msg { padding: 0 16px 20px; font-size: 14px; color: #374151; text-align: center; line-height: 1.7; white-space: pre-wrap; }
 .ios-dialog-btns { display: flex; border-top: 0.5px solid rgba(0,0,0,0.1); }
 .ios-dialog-btn {
   flex: 1; padding: 13px; text-align: center; font-size: 16px;
@@ -211,12 +186,13 @@ body {
 }
 .ios-dialog-btn + .ios-dialog-btn { border-left: 0.5px solid rgba(0,0,0,0.1); }
 .ios-dialog-btn:active { background: rgba(0,0,0,0.06); }
+.empty { text-align: center; color: var(--text-secondary); padding: 40px 20px; font-size: 14px; }
 </style>
 </head>
 <body>
 <div class="app">
   <div class="navbar">
-    <h1>高速免费避坑</h1>
+    <h1>河南高速免费查询工具</h1>
   </div>
 
   <div class="city-tabs">
@@ -243,15 +219,15 @@ body {
   <div id="extraArea"></div>
 
   <div class="action-grid">
-    <div class="action-btn" onclick="enterReverse()">
+    <div class="action-btn" onclick="openReverseModal()">
       <div class="icon">🔄</div>
       <div class="label">反向查询</div>
-      <div class="desc">选起点看免费可达</div>
+      <div class="desc">该站免费去哪</div>
     </div>
     <div class="action-btn" onclick="showRules()">
       <div class="icon">📋</div>
       <div class="label">规则速查</div>
-      <div class="desc">九种组合矩阵</div>
+      <div class="desc">各城市规则矩阵</div>
     </div>
     <div class="action-btn" onclick="showAbout()">
       <div class="icon">ℹ️</div>
@@ -278,7 +254,27 @@ body {
   </div>
 </div>
 
-<!-- iOS 风格确认弹窗 -->
+<!-- 反向查询弹窗 -->
+<div class="modal-mask" id="reverseMask">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>反向查询</h3>
+      <button class="modal-close" onclick="closeReverseModal()">✕</button>
+    </div>
+    <div style="padding:16px">
+      <div class="reverse-pick" onclick="openPickerForReverse()">
+        <div>
+          <div style="font-size:12px;color:#6B7280">选择起点站</div>
+          <div style="font-size:18px;font-weight:700;margin-top:2px" id="reverseStartName">科学大道站</div>
+        </div>
+        <div style="color:#9CA3AF;font-size:14px">更换 ›</div>
+      </div>
+      <div id="reverseResult"></div>
+    </div>
+  </div>
+</div>
+
+<!-- iOS 弹窗 -->
 <div class="ios-dialog-mask" id="iosDialogMask">
   <div class="ios-dialog">
     <div class="ios-dialog-title" id="iosDialogTitle">提示</div>
@@ -354,10 +350,20 @@ const NY_STATIONS = ['南阳站','光武站','双铺站','翟庄站','卧龙站'
 const WZ_ZHENGZHOU = ['沟赵站','西三环北站','惠济站','文化路站','花园路站','柳林站','东三环北站','莲花街站','科学大道站','豫龙站','中原西路站','陇海西路站'];
 const WZ_WUZHI = ['嘉应观站','小徐岗站','武陟站'];
 
+// 参考费额（元，整数，一类客车约0.5元/公里估算）
 const TOLL = {
-  'R007-B005': 32, 'R007-B004': 30, 'R007-B009': 45, 'R001-B005': 30,
-  'R010-B005': 28, 'R024-B005': 60, 'R007-B010': 48,
-  'B005-R007': 32, 'B004-R007': 30,
+  'R007-B005': 28,  // 科学大道→龙亭
+  'R007-B004': 26,  // 科学大道→开封
+  'R007-B009': 42,  // 科学大道→兰考
+  'R007-B010': 45,  // 科学大道→兰考北
+  'R001-B005': 26,  // 沟赵→龙亭
+  'R003-B005': 24,  // 惠济→龙亭
+  'R010-B005': 25,  // 侯寨→龙亭
+  'R024-B005': 55,  // 少林→龙亭
+  'R017-B005': 30,  // 郑州西南→龙亭
+  'R025-B005': 32,  // 新郑→龙亭
+  'B005-R007': 28,
+  'B004-R007': 26,
 };
 const RECOMMEND_G = {
   north: ['G002', 'G003', 'G001'],
@@ -365,14 +371,12 @@ const RECOMMEND_G = {
   south: ['G006', 'G007', 'G008', 'G009'],
 };
 
-// ============ 状态 ============
 let currentCity = 'zhengzhou';
 let currentPicker = 'start';
 let startStation = R_STATIONS.find(s => s.id === 'R007');
 let endStation = B_STATIONS.find(s => s.id === 'B005');
-let reverseMode = false;
+let reverseStart = null; // 反向查询选择的起点
 
-// iOS 风格弹窗
 function showIosDialog(title, msg) {
   document.getElementById('iosDialogTitle').textContent = title;
   document.getElementById('iosDialogMsg').textContent = msg;
@@ -382,7 +386,6 @@ function closeIosDialog() { document.getElementById('iosDialogMask').classList.r
 
 function switchCity(city) {
   currentCity = city;
-  reverseMode = false;
   document.querySelectorAll('.city-tab').forEach(t => t.classList.toggle('active', t.dataset.city === city));
   if (city === 'luoyang') {
     startStation = {id:'LY01', name: LY_STATIONS[0], cat:'LY'};
@@ -413,8 +416,6 @@ function render() {
   st.outerHTML = catTagHtml(startStation.cat).replace('class="', 'id="startTag" class="');
   const et = document.getElementById('endTag');
   et.outerHTML = catTagHtml(endStation.cat).replace('class="', 'id="endTag" class="');
-
-  if (reverseMode) { renderReverse(); return; }
   renderResult();
   renderExtra();
 }
@@ -425,9 +426,9 @@ function renderResult() {
     const s = LY_STATIONS.includes(startStation.name);
     const e = LY_STATIONS.includes(endStation.name);
     if (s && e) {
-      area.innerHTML = '<div class="result-card result-ok"><div class="result-title">本次通行免费</div><div class="result-reason">上下站均在洛阳绕城免费站点内（豫C ETC 小型客车）</div></div>';
+      area.innerHTML = '<div class="result-card result-ok"><div class="result-title">本次通行免费</div><div class="result-reason">上下站均在洛阳绕城 21 个免费站点内（豫C ETC 小型客车）</div></div>';
     } else {
-      area.innerHTML = `<div class="result-card result-warn"><div class="result-header"><div class="result-title">直接导航：不免费</div></div><div class="result-reason">需上下站均在洛阳绕城 21 个免费站点内。${!s ? '起点不在免费站点。' : ''}${!e ? '终点不在免费站点。' : ''}</div></div>`;
+      area.innerHTML = `<div class="result-card result-warn"><div class="result-header"><div class="result-title">直接导航：不免费</div></div><div class="result-reason">需上下站均在洛阳绕城免费站点内。${!s ? '起点不在免费站点。' : ''}${!e ? '终点不在免费站点。' : ''}</div></div>`;
     }
     return;
   }
@@ -435,7 +436,7 @@ function renderResult() {
     const s = NY_STATIONS.includes(startStation.name);
     const e = NY_STATIONS.includes(endStation.name);
     if (s && e) {
-      area.innerHTML = '<div class="result-card result-ok"><div class="result-title">本次通行免费</div><div class="result-reason">上下站均在南阳绕城免费站点内（豫R ETC 小型客车）</div></div>';
+      area.innerHTML = '<div class="result-card result-ok"><div class="result-title">本次通行免费</div><div class="result-reason">上下站均在南阳绕城 7 个免费站点内（豫R ETC 小型客车）</div></div>';
     } else {
       area.innerHTML = `<div class="result-card result-warn"><div class="result-header"><div class="result-title">直接导航：不免费</div></div><div class="result-reason">需上下站均在南阳绕城免费站点内。${!s ? '起点不在免费站点。' : ''}${!e ? '终点不在免费站点。' : ''}</div></div>`;
     }
@@ -461,7 +462,7 @@ function renderResult() {
     const g = G_STATIONS.find(s => s.id === gid);
     return g ? g.name : '';
   });
-  const feeText = toll ? `¥${toll}` : '约 ¥30';
+  const feeText = toll ? `约¥${toll}` : '约¥25~35';
 
   area.innerHTML = `
     <div class="result-card result-warn">
@@ -473,7 +474,7 @@ function renderResult() {
     </div>
     <div class="result-card result-free">
       <div class="result-header">
-        <div class="result-title">推荐免费方案：1 次中转立省 ${feeText.replace('约 ','')}</div>
+        <div class="result-title">推荐免费方案：1 次中转立省 ${feeText.replace('约','')}</div>
         <span class="badge badge-green">全程 ¥0 免费</span>
       </div>
       <div class="plan-steps">
@@ -541,28 +542,39 @@ function renderStationList() {
 function pickStation(s) {
   if (currentPicker === 'start') startStation = s; else endStation = s;
   closePicker();
-  reverseMode = false;
   render();
 }
 function swapStations() {
   [startStation, endStation] = [endStation, startStation];
-  reverseMode = false;
   render();
 }
 
-// ============ 反向查询（重做） ============
-function enterReverse() {
+// ============ 反向查询（独立弹窗） ============
+function openReverseModal() {
   if (currentCity !== 'zhengzhou') {
     showIosDialog('提示', '反向查询功能仅支持郑州体系\n（红/绿/蓝三站组合）');
     return;
   }
-  reverseMode = true;
+  reverseStart = startStation;
+  document.getElementById('reverseStartName').textContent = reverseStart.name;
   renderReverse();
+  document.getElementById('reverseMask').classList.add('show');
+}
+function closeReverseModal() { document.getElementById('reverseMask').classList.remove('show'); }
+
+function openPickerForReverse() {
+  // 复用站点选择器，但选中后设为reverseStart
+  currentPicker = 'reverse';
+  document.getElementById('pickerTitle').textContent = '选择反向查询起点';
+  document.getElementById('pickerMask').classList.add('show');
+  document.getElementById('pickerSearch').value = '';
+  renderStationList();
 }
 
 function renderReverse() {
-  const area = document.getElementById('resultArea');
-  const sc = startStation.cat;
+  const area = document.getElementById('reverseResult');
+  if (!reverseStart) { area.innerHTML = '<div class="empty">请先选择起点站</div>'; return; }
+  const sc = reverseStart.cat;
   let freeTo = [], needTransfer = [];
   if (sc === 'R') {
     freeTo = [...R_STATIONS, ...G_STATIONS];
@@ -573,64 +585,81 @@ function renderReverse() {
   } else {
     freeTo = [...R_STATIONS, ...G_STATIONS, ...B_STATIONS];
   }
-
-  let html = `<div class="result-card">
-    <div class="result-header" style="margin-bottom:12px">
-      <div class="result-title" style="font-size:16px">从 ${startStation.name} 出发</div>
-    </div>
-    <div class="result-reason" style="margin-bottom:12px">点击下方任意站点，可直接设为终点并开始计算</div>
-    <div class="reverse-group">
-      <h4>✅ 可免费直达（${freeTo.length} 站）</h4>
-      <div class="reverse-stations">`;
+  let html = `<div class="reverse-group">
+    <h4>✅ 可免费直达（${freeTo.length} 站）</h4>
+    <div class="reverse-stations">`;
   freeTo.forEach(s => {
     html += `<span class="reverse-chip" onclick="pickReverseEnd('${s.id}','${s.name}','${s.cat}')">${s.name}</span>`;
   });
   html += `</div></div>`;
   if (needTransfer.length > 0) {
     html += `<div class="reverse-group">
-      <h4>⚠️ 需在绿色站中转一次（${needTransfer.length} 站）</h4>
+      <h4>⚠️ 需在绿色站中转（${needTransfer.length} 站）</h4>
       <div class="reverse-stations">`;
     needTransfer.forEach(s => {
       html += `<span class="reverse-chip dim" onclick="pickReverseEnd('${s.id}','${s.name}','${s.cat}')">${s.name}</span>`;
     });
     html += `</div></div>`;
   }
-  html += `<div style="margin-top:12px;text-align:center">
-      <button onclick="reverseMode=false;render()" style="padding:10px 20px;border-radius:12px;border:1px solid #ddd;background:#fff;cursor:pointer;font-size:14px">返回正常查询</button>
-    </div></div>`;
+  html += `<div style="font-size:12px;color:#9CA3AF;margin-top:8px">点击站点可直接设为终点并计算</div>`;
   area.innerHTML = html;
-  window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
 function pickReverseEnd(id, name, cat) {
   endStation = {id, name, cat};
-  reverseMode = false;
+  closeReverseModal();
   render();
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
+// 重写pickStation以支持反向查询选起点
+const _origPickStation = pickStation;
+pickStation = function(s) {
+  if (currentPicker === 'reverse') {
+    reverseStart = s;
+    document.getElementById('reverseStartName').textContent = s.name;
+    closePicker();
+    renderReverse();
+    return;
+  }
+  _origPickStation(s);
+};
+
 // ============ 规则速查 / 关于 ============
 function showRules() {
-  showIosDialog('免费规则矩阵（郑州体系）',
-`红站 → 红站：免费
+  showIosDialog('规则速查',
+`【郑州体系】
+红站 → 红站：免费
 红站 → 绿站：免费
 蓝站 → 蓝站：免费
 蓝站 → 绿站：免费
 绿站 → 任意站：免费
-———————
-红站 → 蓝站：收费
-　需在绿站中转一次
-蓝站 → 红站：收费
-　需在绿站中转一次`);
+红站 → 蓝站：收费，需绿站中转
+蓝站 → 红站：收费，需绿站中转
+
+【洛阳绕城（豫C）】
+上下站均在 21 个免费站点内：免费
+任意一站不在免费圈：收费
+
+【南阳绕城（豫R）】
+上下站均在 7 个免费站点内：免费
+任意一站不在免费圈：收费`);
 }
+
 function showAbout() {
   showIosDialog('关于本工具',
-`豫A/豫V 高速免费避坑计算器
+`河南高速免费查询工具
 
-数据来源：郑州市政府、河南省政府、大象新闻 2026 年 9 月公告。
-绿色站点 = 两体系交集（花园路/柳林/东三环北/郑州新区/圃田/航海路/南三环/郑庵/姚家）。
-附加政策：武陟嘉应观补贴、郑新黄河大桥精准补贴、洛阳绕城（豫C）、南阳绕城（豫R）。
+【覆盖范围】
+· 郑州：豫A/豫V ETC 小客车，红/绿/蓝三站组合规则
+· 洛阳：豫C ETC 小客车，21 站绕城免费圈
+· 南阳：豫R ETC 小客车，7 站绕城免费圈
 
+【附加政策】
+· 武陟嘉应观双向补贴（郑州 12 站 ↔ 武陟 3 站）
+· 郑新黄河大桥精准补贴（平原示范区）
+
+数据来源：郑州市政府、河南省政府、大象新闻 2026 年公告。
 实际扣费以 ETC 记录为准。`);
 }
 
