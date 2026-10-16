@@ -536,22 +536,49 @@ async function analyzeNational() {
 
     let planHtml = '';
     if (passesZZ && startStation.d < 15) {
-      // 起点在郑州附近，规划蹭免费方案
-      // 根据起点方向推荐中转绿站
-      let greenTransfer, edgeStation;
-      if (oLng < 113.65) {
-        // 西边来的
-        greenTransfer = '南三环站 / 航海路站';
-        edgeStation = '机场站北口';
-      } else if (oLat > 34.82) {
-        // 北边来的
-        greenTransfer = '柳林站 / 东三环北站';
+      // 起点站类型决定是否需要绿站中转
+      const isGreenStart = startStation.cat === 'G';
+      
+      // 根据终点方向选边缘站（路线上最靠终点方向的郑州体系内站）
+      let edgeStation;
+      // 判断终点在郑州的哪个方向
+      const [dLng, dLat] = geoD.location.split(',').map(Number);
+      if (dLng > oLng && dLat < oLat) {
+        // 东南方向（淮阳/周口/漯河）
+        edgeStation = '园博园站 / 机场站北口';
+      } else if (dLng > oLng && dLat >= oLat) {
+        // 东边方向（开封/兰考）
         edgeStation = '开封站 / 龙亭站';
-      } else {
-        greenTransfer = '圃田站 / 郑州新区站';
+      } else if (dLng < oLng && dLat < oLat) {
+        // 西南方向（许昌/南阳）
         edgeStation = '机场站北口';
+      } else {
+        edgeStation = '郑州西南站 / 南三环站';
       }
-      const saveFee = Math.round(totalKm * 0.5 * 0.35); // 绕城段约占35%
+
+      const saveFee = Math.round(totalKm * 0.5 * 0.35);
+      let steps = [];
+
+      steps.push(`第 1 步：从 <b>${startStation.name}</b> 上高速${isGreenStart ? '（绿站，任意方向都免费）' : '（红站）'}`);
+      
+      if (!isGreenStart) {
+        // 起点是红站，需要在绿站中转一次
+        let greenTransfer;
+        if (oLng < 113.65) {
+          greenTransfer = '南三环站 / 航海路站';
+        } else if (oLat > 34.82) {
+          greenTransfer = '柳林站 / 东三环北站';
+        } else {
+          greenTransfer = '圃田站 / 郑州新区站';
+        }
+        steps.push(`第 2 步：在 <b style="color:#16A34A">${greenTransfer}</b>（绿站）下高速，原地掉头重刷 ETC 再上`);
+        steps.push(`第 3 步：继续行驶，在 <b>${edgeStation}</b> 下高速，原地掉头重刷 ETC 再上`);
+      } else {
+        // 起点是绿站，直接到边缘站下再上
+        steps.push(`第 2 步：继续行驶，在 <b>${edgeStation}</b> 下高速，原地掉头重刷 ETC 再上`);
+      }
+      
+      steps.push(`第 ${steps.length + 1} 步：直达 <b>${d}</b> 下站`);
 
       planHtml = `
       <div class="result-card result-free">
@@ -565,10 +592,7 @@ async function analyzeNational() {
           全程约 ${totalKm} km · ${totalMin} 分钟
         </div>
         <div class="plan-steps">
-          <div class="step">第 1 步：从 <b>${startStation.name}</b> 上高速${startStation.cat === 'R' ? '（红站）' : '（绿站）'}</div>
-          <div class="step">第 2 步：在 <b style="color:#16A34A">${greenTransfer}</b>（绿站）下高速，原地掉头重刷 ETC 再上</div>
-          <div class="step">第 3 步：继续行驶，在 <b>${edgeStation}</b> 下高速，原地掉头重刷 ETC 再上</div>
-          <div class="step">第 4 步：直达 <b>${d}</b> 下站</div>
+          ${steps.map(p => `<div class="step">${p}</div>`).join('')}
           <div class="transfer-note">⏱️ 每次中转约 3~5 分钟 · 全程 ETC 免费段约 ${Math.round(totalKm*0.35)} km</div>
         </div>
       </div>`;
