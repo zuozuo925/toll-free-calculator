@@ -114,9 +114,14 @@ body {
 
 .disclaimer { margin-top: 24px; padding: 0 8px; font-size: 11px; color: #9CA3AF; text-align: center; line-height: 1.6; }
 
+/* 站点选择器层级最高（在反向弹窗之上） */
+#pickerMask { z-index: 300; }
+/* 反向弹窗次之 */
+#reverseMask { z-index: 250; }
 .modal-mask {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: none;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none;
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  overscroll-behavior: contain;
 }
 .modal-mask.show { display: flex; align-items: flex-end; }
 .modal {
@@ -377,12 +382,23 @@ let startStation = R_STATIONS.find(s => s.id === 'R007');
 let endStation = B_STATIONS.find(s => s.id === 'B005');
 let reverseStart = null; // 反向查询选择的起点
 
+function lockScroll() { document.body.style.overflow = 'hidden'; }
+function unlockScroll() {
+  // 检查是否还有其他mask打开
+  const anyOpen = ['pickerMask','reverseMask','iosDialogMask'].some(id => document.getElementById(id).classList.contains('show'));
+  if (!anyOpen) document.body.style.overflow = '';
+}
+
 function showIosDialog(title, msg) {
   document.getElementById('iosDialogTitle').textContent = title;
   document.getElementById('iosDialogMsg').textContent = msg;
   document.getElementById('iosDialogMask').classList.add('show');
+  lockScroll();
 }
-function closeIosDialog() { document.getElementById('iosDialogMask').classList.remove('show'); }
+function closeIosDialog() {
+  document.getElementById('iosDialogMask').classList.remove('show');
+  unlockScroll();
+}
 
 function switchCity(city) {
   currentCity = city;
@@ -497,12 +513,16 @@ function renderExtra() {
 // ============ 站点选择器 ============
 function openPicker(type) {
   currentPicker = type;
-  document.getElementById('pickerTitle').textContent = type === 'start' ? '选择起点收费站' : '选择终点收费站';
+  document.getElementById('pickerTitle').textContent = type === 'start' ? '选择起点收费站' : (type === 'end' ? '选择终点收费站' : '选择反向查询起点');
   document.getElementById('pickerMask').classList.add('show');
   document.getElementById('pickerSearch').value = '';
+  lockScroll();
   renderStationList();
 }
-function closePicker() { document.getElementById('pickerMask').classList.remove('show'); }
+function closePicker() {
+  document.getElementById('pickerMask').classList.remove('show');
+  unlockScroll();
+}
 
 function renderStationList() {
   const q = document.getElementById('pickerSearch').value.trim().toLowerCase();
@@ -559,8 +579,12 @@ function openReverseModal() {
   document.getElementById('reverseStartName').textContent = reverseStart.name;
   renderReverse();
   document.getElementById('reverseMask').classList.add('show');
+  lockScroll();
 }
-function closeReverseModal() { document.getElementById('reverseMask').classList.remove('show'); }
+function closeReverseModal() {
+  document.getElementById('reverseMask').classList.remove('show');
+  unlockScroll();
+}
 
 function openPickerForReverse() {
   // 复用站点选择器，但选中后设为reverseStart
