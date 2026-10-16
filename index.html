@@ -463,50 +463,118 @@ function switchCity(city) {
 }
 
 // ============ 全国路线分析 ============
+// 地址关键词→推荐上站
+function matchStartStation(addr) {
+  const a = addr || '';
+  if (/郑州大学|高新区|科学大道|沟赵|西四环|药厂街|莲花街/.test(a)) return {id:'R007', name:'科学大道站', dir:'west'};
+  if (/荥阳|上街|豫龙|大溪地/.test(a)) return {id:'R005', name:'豫龙站', dir:'west'};
+  if (/西三环|建设路|桐柏路/.test(a)) return {id:'R008', name:'中原西路站', dir:'west'};
+  if (/新郑|机场|港区|航空港|薛店|孟庄/.test(a)) return {id:'R027', name:'机场站北口', dir:'south'};
+  if (/侯寨|樱桃沟|绕城高速南站/.test(a)) return {id:'R010', name:'侯寨站', dir:'south'};
+  if (/惠济|北四环|天河路|丰硕街/.test(a)) return {id:'R003', name:'惠济站', dir:'north'};
+  if (/文化路|北三环|花园路|国贸|正弘城/.test(a)) return {id:'R004', name:'文化路站', dir:'north'};
+  if (/东站|郑东新区|CBD|会展中心|高铁东站/.test(a)) return {id:'G002', name:'柳林站', dir:'east'};
+  if (/开封|兰考|中牟|汴/.test(a)) return {id:'B002', name:'中牟站', dir:'east'};
+  return null;
+}
+
+// 判断终点在郑州的哪个方向
+function matchEndDirection(addr) {
+  const a = addr || '';
+  if (/淮阳|周口|项城|沈丘|阜阳|界首|漯河|驻马店|信阳|武汉|广州|长沙/.test(a)) return 'southeast';
+  if (/开封|兰考|商丘|徐州|菏泽|日照|连云港/.test(a)) return 'east';
+  if (/许昌|平顶山|南阳|襄阳|十堰/.test(a)) return 'south';
+  if (/洛阳|三门峡|西安|郑州大学新校区|高新区/.test(a)) return 'west';
+  if (/新乡|安阳|鹤壁|濮阳|邯郸|石家庄|北京|焦作|晋城/.test(a)) return 'north';
+  return 'unknown';
+}
+
 function analyzeNational() {
   const o = document.getElementById('natStart').value.trim();
   const d = document.getElementById('natEnd').value.trim();
   if (!o || !d) { showIosDialog('提示', '请输入起点和终点地址'); return; }
 
-  const text = (o + ' ' + d).toLowerCase();
   const result = document.getElementById('nationalResult');
-
-  // 关键词启发式判断是否经过免费圈
-  const hasZZ = /郑州|荥阳|新郑|新密|巩义|登封|中牟|航空港/.test(text);
-  const hasKF = /开封|兰考|杞县|通许|尉氏/.test(text);
-  const hasLY = /洛阳|孟津|偃师|伊川|新安|宜阳/.test(text);
-  const hasNY = /南阳|邓州|唐河|方城|镇平/.test(text);
+  const start = matchStartStation(o);
+  const endDir = matchEndDirection(d);
 
   let html = '';
-  if (hasZZ || hasKF) {
+
+  // 如果识别到起点站，给出具体中转方案
+  if (start && endDir !== 'unknown') {
+    // 根据方向组合推荐中转方案
+    let plan = [];
+    let saveFee = 0;
+
+    if (start.dir === 'west' && endDir === 'southeast') {
+      // 西→东南：科学大道上 → 南三环/航海路（绿站）中转 → 机场（红站）下再上
+      plan = [
+        `第 1 步：从 <b>${start.name}</b> 上高速（红站，郑州主城体系）`,
+        `第 2 步：走西南绕城向东，在 <b style="color:#16A34A">南三环站 / 航海路站</b>（绿站）下高速，原地掉头重刷 ETC 再上`,
+        `第 3 步：继续向东转京港澳高速向南，在 <b>机场站北口</b>（港区红站）下高速，原地掉头重刷 ETC 再上`,
+        `第 4 步：转大广高速/商周高速向东南，直达 <b>${d}</b> 下站`,
+      ];
+      saveFee = 18; // 科学大道→机场约35km，省约18元
+    } else if (start.dir === 'north' && endDir === 'east') {
+      plan = [
+        `第 1 步：从 <b>${start.name}</b> 上高速（红站）`,
+        `第 2 步：走中州大道向北转连霍高速向东，在 <b style="color:#16A34A">柳林站 / 东三环北站</b>（绿站）下高速，掉头重刷 ETC 再上`,
+        `第 3 步：继续连霍高速向东，在 <b>开封站 / 龙亭站</b>（蓝站）下高速，掉头重刷 ETC 再上`,
+        `第 4 步：继续向东直达 <b>${d}</b>`,
+      ];
+      saveFee = 15;
+    } else if (start.dir === 'south' && endDir === 'east') {
+      plan = [
+        `第 1 步：从 <b>${start.name}</b> 上高速（红站）`,
+        `第 2 步：走机场高速向北转连霍高速向东，在 <b style="color:#16A34A">圃田站 / 郑州新区站</b>（绿站）下高速，掉头重刷 ETC 再上`,
+        `第 3 步：继续连霍高速向东，在 <b>开封站 / 龙亭站</b>（蓝站）下高速，掉头重刷 ETC 再上`,
+        `第 4 步：继续向东直达 <b>${d}</b>`,
+      ];
+      saveFee = 16;
+    } else if (start.dir === 'west' && endDir === 'east') {
+      plan = [
+        `第 1 步：从 <b>${start.name}</b> 上高速（红站）`,
+        `第 2 步：走连霍高速向东，在 <b style="color:#16A34A">柳林站 / 东三环北站</b>（绿站）下高速，掉头重刷 ETC 再上`,
+        `第 3 步：继续连霍高速向东，在 <b>开封站 / 龙亭站</b>（蓝站）下高速，掉头重刷 ETC 再上`,
+        `第 4 步：继续向东直达 <b>${d}</b>`,
+      ];
+      saveFee = 20;
+    } else {
+      // 通用方案：在最近的绿站中转一次
+      plan = [
+        `第 1 步：从 <b>${start.name}</b> 上高速`,
+        `第 2 步：根据导航路线，在郑州绕城段就近的 <b style="color:#16A34A">绿色换乘站</b>（花园路/柳林/东三环北/郑州新区/圃田/航海路/南三环/郑庵/姚家）下高速，掉头重刷 ETC 再上`,
+        `第 3 步：继续行驶，在出郑州都市圈前的最后一个红站（如机场站/郑州西南站）下高速，掉头重刷 ETC 再上`,
+        `第 4 步：继续直达 <b>${d}</b>`,
+      ];
+      saveFee = 15;
+    }
+
     html = `
     <div class="result-card result-free">
       <div class="result-header">
-        <div class="result-title">✅ 路线经过郑州都市圈</div>
-        <span class="badge badge-green">可蹭免费段</span>
+        <div class="result-title">✅ 推荐路线（蹭绕城免费段）</div>
+        <span class="badge badge-green">省约 ¥${saveFee}</span>
       </div>
-      <div class="result-reason">豫A/V ETC 小客车在郑州绕城段上下站均可免费。具体在哪个站下高速再上最划算，取决于你的实际行进方向——建议先看下方导航路线，再对照"规则"页里的 9 个绿色换乘站选就近的那个下高速重刷 ETC。</div>
+      <div class="result-reason">识别到起点：<b>${o}</b> → 建议从 <b>${start.name}</b> 上高速。通过两次"下高速再上"，把郑州绕城段费用全部省掉。</div>
       <div class="plan-steps">
-        <div class="step">🔁 9 个绿色换乘站：花园路 / 柳林 / 东三环北 / 郑州新区 / 圃田 / 航海路 / 南三环 / 郑庵 / 姚家。</div>
-        <div class="transfer-note">操作：下高速出 ETC 后原地掉头，重新刷 ETC 进站，全程约 3~5 分钟。</div>
+        ${plan.map(p => `<div class="step">${p}</div>`).join('')}
+        <div class="transfer-note">⏱️ 每次中转约 3~5 分钟（出 ETC → 掉头 → 重刷进站）</div>
       </div>
     </div>`;
-  } else if (hasLY) {
-    html = `<div class="result-card result-ok">
-      <div class="result-title">✅ 洛阳绕城免费圈</div>
-      <div class="result-reason">豫C ETC 小客车上下站均在洛阳绕城 21 站内免费。</div>
-    </div>`;
-  } else if (hasNY) {
-    html = `<div class="result-card result-ok">
-      <div class="result-title">✅ 南阳绕城免费圈</div>
-      <div class="result-reason">豫R ETC 小客车上下站均在南阳绕城 7 站内免费。</div>
-    </div>`;
-  } else {
+  } else if (!start) {
     html = `<div class="result-card result-warn">
       <div class="result-header">
-        <div class="result-title">该路线不经过免费圈</div>
+        <div class="result-title">⚠️ 未能识别起点站</div>
       </div>
-      <div class="result-reason">免费政策目前仅覆盖郑州都市圈、洛阳绕城、南阳绕城。其他路段按正常 ETC 费率收费。</div>
+      <div class="result-reason">我没认出你说的起点附近哪个收费站。建议你：① 换个说法再试（比如"郑州大学新校区"、"高新区科学大道"）；② 或者直接到"郑州"Tab 手动选上站。</div>
+    </div>`;
+  } else if (endDir === 'unknown') {
+    html = `<div class="result-card result-warn">
+      <div class="result-header">
+        <div class="result-title">⚠️ 未能识别终点方向</div>
+      </div>
+      <div class="result-reason">我没认出终点在郑州的哪个方向。建议换个说法再试，或者直接到"郑州"Tab 手动选终点站。</div>
     </div>`;
   }
 
