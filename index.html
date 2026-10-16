@@ -196,6 +196,26 @@ body {
 .ios-dialog-btn + .ios-dialog-btn { border-left: 0.5px solid rgba(0,0,0,0.1); }
 .ios-dialog-btn:active { background: rgba(0,0,0,0.06); }
 .empty { text-align: center; color: var(--text-secondary); padding: 40px 20px; font-size: 14px; }
+.nat-input {
+  width: 100%; padding: 12px 14px; border: 1px solid #e5e7eb;
+  border-radius: 12px; font-size: 16px; outline: none; background: #fff;
+  -webkit-appearance: none; appearance: none;
+}
+.nat-input:focus { border-color: var(--theme-primary); }
+.nat-btn {
+  width: 100%; padding: 14px; border: none; border-radius: 14px;
+  background: var(--theme-primary); color: #fff; font-size: 16px;
+  font-weight: 600; cursor: pointer;
+}
+.nat-btn:active { opacity: 0.85; }
+.nav-row { display: flex; gap: 10px; margin-top: 12px; }
+.nav-btn {
+  flex: 1; padding: 13px; border-radius: 14px; border: none;
+  font-size: 15px; font-weight: 600; cursor: pointer; color: #fff;
+}
+.nav-btn.baidu { background: #306EFF; }
+.nav-btn.gaode { background: #00A6A6; }
+.nav-btn:active { opacity: 0.85; }
 </style>
 </head>
 <body>
@@ -209,9 +229,10 @@ body {
     <div class="city-tab active" data-city="zhengzhou" onclick="switchCity('zhengzhou')">郑州</div>
     <div class="city-tab" data-city="luoyang" onclick="switchCity('luoyang')">洛阳</div>
     <div class="city-tab" data-city="nanyang" onclick="switchCity('nanyang')">南阳</div>
+    <div class="city-tab" data-city="national" onclick="switchCity('national')">全国路线</div>
   </div>
 
-  <div class="select-card">
+  <div class="select-card" id="stationPanel">
     <div class="station-row" onclick="openPicker('start')">
       <div class="station-label">起点收费站</div>
       <div class="station-name" id="startName">科学大道站</div>
@@ -225,8 +246,22 @@ body {
     </div>
   </div>
 
+  <!-- 全国路线面板 -->
+  <div class="select-card" id="nationalPanel" style="display:none">
+    <div style="margin-bottom:12px">
+      <div class="station-label">起点地址</div>
+      <input id="natStart" class="nat-input" placeholder="如：郑州市二七广场" />
+    </div>
+    <div style="margin-bottom:12px">
+      <div class="station-label">终点地址</div>
+      <input id="natEnd" class="nat-input" placeholder="如：开封市龙亭湖" />
+    </div>
+    <button class="nat-btn" onclick="analyzeNational()">分析路线</button>
+  </div>
+
   <div id="resultArea"><div class="empty" style="padding:60px 20px">选择上下站，一键测算通行费</div></div>
   <div id="extraArea"></div>
+  <div id="nationalResult"></div>
 
   <div class="action-grid">
     <div class="action-btn" onclick="openReverseModal()">
@@ -408,17 +443,95 @@ function closeIosDialog() {
 function switchCity(city) {
   currentCity = city;
   document.querySelectorAll('.city-tab').forEach(t => t.classList.toggle('active', t.dataset.city === city));
+  const isNational = (city === 'national');
+  document.getElementById('stationPanel').style.display = isNational ? 'none' : '';
+  document.getElementById('nationalPanel').style.display = isNational ? '' : 'none';
+  document.getElementById('resultArea').style.display = isNational ? 'none' : '';
+  document.getElementById('extraArea').style.display = isNational ? 'none' : '';
+  document.getElementById('nationalResult').innerHTML = '';
   if (city === 'luoyang') {
     startStation = {id:'LY01', name: LY_STATIONS[0], cat:'LY'};
     endStation = {id:'LY02', name: LY_STATIONS[1], cat:'LY'};
   } else if (city === 'nanyang') {
     startStation = {id:'NY01', name: NY_STATIONS[0], cat:'NY'};
     endStation = {id:'NY02', name: NY_STATIONS[1], cat:'NY'};
-  } else {
+  } else if (city !== 'national') {
     startStation = R_STATIONS.find(s => s.id === 'R007');
     endStation = B_STATIONS.find(s => s.id === 'B005');
   }
-  render();
+  if (!isNational) render();
+}
+
+// ============ 全国路线分析 ============
+function analyzeNational() {
+  const o = document.getElementById('natStart').value.trim();
+  const d = document.getElementById('natEnd').value.trim();
+  if (!o || !d) { showIosDialog('提示', '请输入起点和终点地址'); return; }
+
+  const text = (o + ' ' + d).toLowerCase();
+  const result = document.getElementById('nationalResult');
+
+  // 关键词启发式判断是否经过免费圈
+  const hasZZ = /郑州|荥阳|新郑|新密|巩义|登封|中牟|航空港/.test(text);
+  const hasKF = /开封|兰考|杞县|通许|尉氏/.test(text);
+  const hasLY = /洛阳|孟津|偃师|伊川|新安|宜阳/.test(text);
+  const hasNY = /南阳|邓州|唐河|方城|镇平/.test(text);
+
+  let html = '';
+  if (hasZZ || hasKF) {
+    // 经过郑州/开封，推荐在绿站中转蹭绕城免费
+    html = `
+    <div class="result-card result-free">
+      <div class="result-header">
+        <div class="result-title">✅ 可蹭郑州绕城免费段</div>
+        <span class="badge badge-green">建议中转</span>
+      </div>
+      <div class="result-reason">你的路线经过郑州都市圈，豫A/V ETC 小客车可在郑州绕城段免费通行。</div>
+      <div class="plan-steps">
+        <div class="step">🔁 推荐在 <b style="color:#b45309">柳林站 / 东三环北站</b> 下高速再上，可省郑州绕城段费（约 ¥15~30）。</div>
+        <div class="transfer-note">操作：下高速出 ETC 后原地掉头，重新刷 ETC 进站，全程约 3~5 分钟。</div>
+      </div>
+    </div>`;
+  } else if (hasLY) {
+    html = `<div class="result-card result-ok">
+      <div class="result-title">✅ 洛阳绕城免费圈</div>
+      <div class="result-reason">豫C ETC 小客车上下站均在洛阳绕城 21 站内免费。</div>
+    </div>`;
+  } else if (hasNY) {
+    html = `<div class="result-card result-ok">
+      <div class="result-title">✅ 南阳绕城免费圈</div>
+      <div class="result-reason">豫R ETC 小客车上下站均在南阳绕城 7 站内免费。</div>
+    </div>`;
+  } else {
+    html = `<div class="result-card result-warn">
+      <div class="result-header">
+        <div class="result-title">该路线不经过免费圈</div>
+      </div>
+      <div class="result-reason">免费政策目前仅覆盖郑州都市圈、洛阳绕城、南阳绕城。其他路段按正常 ETC 费率收费。</div>
+    </div>`;
+  }
+
+  html += `
+    <div class="nav-row">
+      <button class="nav-btn baidu" onclick="navBaidu()">🚗 百度地图导航</button>
+      <button class="nav-btn gaode" onclick="navGaode()">🧭 高德地图导航</button>
+    </div>`;
+  result.innerHTML = html;
+}
+
+function navBaidu() {
+  const o = document.getElementById('natStart').value.trim();
+  const d = document.getElementById('natEnd').value.trim();
+  if (!o || !d) { showIosDialog('提示', '请先输入起终点'); return; }
+  const url = `https://api.map.baidu.com/direction?origin=${encodeURIComponent(o)}&destination=${encodeURIComponent(d)}&mode=driving&output=html&src=webapp.tollfree`;
+  window.open(url, '_blank');
+}
+function navGaode() {
+  const o = document.getElementById('natStart').value.trim();
+  const d = document.getElementById('natEnd').value.trim();
+  if (!o || !d) { showIosDialog('提示', '请先输入起终点'); return; }
+  const url = `https://uri.amap.com/search?keyword=${encodeURIComponent(o + '到' + d)}&city=全国`;
+  window.open(url, '_blank');
 }
 
 function catTagHtml(cat) {
