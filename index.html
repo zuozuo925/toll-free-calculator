@@ -25,36 +25,21 @@
   --text-secondary: #6B7280;
   --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
-
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: var(--bg-gradient);
-  color: var(--text-primary);
-  min-height: 100vh;
-  line-height: 1.5;
+  background: var(--bg-gradient); color: var(--text-primary); min-height: 100vh; line-height: 1.5;
 }
+.app { max-width: 480px; margin: 0 auto; padding: 0 16px 40px; }
 
-.app {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 0 16px 40px;
-}
-
-/* 顶部导航 */
 .navbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: sticky; top: 0; z-index: 100;
   margin: 0 -16px 16px;
   padding: env(safe-area-inset-top, 12px) 20px 12px;
   background: rgba(245, 247, 251, 0.72);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: flex; justify-content: space-between; align-items: center;
   border-bottom: 0.5px solid rgba(0,0,0,0.06);
 }
 .navbar h1 { font-size: 17px; font-weight: 700; }
@@ -63,50 +48,36 @@ body {
   background: var(--card-bg); border: none;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; font-size: 18px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
 }
 
-/* 城市Tab */
-.city-tabs {
-  display: flex; gap: 8px; margin-bottom: 16px;
-}
+.city-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
 .city-tab {
-  flex: 1; padding: 10px; text-align: center;
-  border-radius: 12px; background: var(--card-bg);
-  border: 1px solid var(--card-border);
+  flex: 1; padding: 10px; text-align: center; border-radius: 12px;
+  background: var(--card-bg); border: 1px solid var(--card-border);
   font-size: 14px; font-weight: 500; cursor: pointer;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   transition: all 0.2s;
 }
-.city-tab.active {
-  background: var(--theme-primary); color: #fff;
-  border-color: var(--theme-primary);
-}
+.city-tab.active { background: var(--theme-primary); color: #fff; border-color: var(--theme-primary); }
 
-/* 起终点卡片 */
 .select-card {
   background: var(--card-bg);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--card-border);
-  border-radius: 24px;
-  padding: 20px;
-  box-shadow: var(--shadow);
-  margin-bottom: 16px;
+  border: 1px solid var(--card-border); border-radius: 24px;
+  padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px;
 }
 .station-row { cursor: pointer; padding: 8px 0; }
 .station-row + .station-row { border-top: 1px solid rgba(0,0,0,0.05); margin-top: 8px; }
 .station-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
 .station-name { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
-.station-tag {
-  display: inline-block; padding: 3px 10px; border-radius: 8px;
-  font-size: 12px; font-weight: 500;
-}
+.station-tag { display: inline-block; padding: 3px 10px; border-radius: 8px; font-size: 12px; font-weight: 500; }
 .tag-r { background: rgba(220, 38, 38, 0.1); color: #DC2626; }
 .tag-b { background: rgba(11, 95, 208, 0.1); color: #0B5FD0; }
 .tag-g { background: rgba(22, 163, 74, 0.1); color: #16A34A; }
+.tag-luoyang { background: rgba(245, 158, 11, 0.12); color: #D97706; }
+.tag-nanyang { background: rgba(139, 92, 246, 0.12); color: #7C3AED; }
 .swap-btn {
   display: block; margin: 4px auto; width: 40px; height: 40px;
   border-radius: 50%; background: var(--theme-primary-soft);
@@ -115,38 +86,20 @@ body {
 }
 .swap-btn:active { transform: rotate(180deg) scale(0.95); }
 
-/* 结果卡片 */
-.result-card {
-  border-radius: 20px; padding: 18px; margin-bottom: 12px;
-  border: 1px solid;
-}
-.result-warn {
-  background: var(--warn-red-soft); border-color: rgba(220,38,38,0.2);
-}
-.result-free {
-  background: var(--free-green-soft); border-color: rgba(22,163,74,0.2);
-}
-.result-ok {
-  background: var(--free-green-soft); border-color: rgba(22,163,74,0.2);
-  text-align: center; padding: 24px;
-}
-.result-header {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  margin-bottom: 8px; gap: 12px;
-}
+.result-card { border-radius: 20px; padding: 18px; margin-bottom: 12px; border: 1px solid; }
+.result-warn { background: var(--warn-red-soft); border-color: rgba(220,38,38,0.2); }
+.result-free { background: var(--free-green-soft); border-color: rgba(22,163,74,0.2); }
+.result-ok { background: var(--free-green-soft); border-color: rgba(22,163,74,0.2); text-align: center; padding: 24px; }
+.result-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 12px; }
 .result-title { font-size: 18px; font-weight: 700; }
 .result-warn .result-title { color: #DC2626; }
 .result-free .result-title { color: #16A34A; }
-.badge {
-  padding: 6px 12px; border-radius: 10px;
-  font-size: 14px; font-weight: 700; white-space: nowrap;
-}
+.badge { padding: 6px 12px; border-radius: 10px; font-size: 14px; font-weight: 700; white-space: nowrap; }
 .badge-red { background: #DC2626; color: #fff; }
 .badge-green { background: #16A34A; color: #fff; }
 .result-reason { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
 .plan-steps { margin-top: 12px; font-size: 14px; line-height: 1.7; }
 .plan-steps .step { padding: 4px 0; }
-.plan-steps .step b { color: var(--text-primary); }
 .plan-steps .transfer-note {
   background: rgba(255,255,255,0.6); border-radius: 10px;
   padding: 8px 12px; margin: 6px 0; font-size: 13px;
@@ -157,33 +110,21 @@ body {
   font-size: 13px; color: #92400E;
 }
 
-/* 底部功能按钮 */
-.action-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-  margin-top: 16px;
-}
+.action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
 .action-btn {
   background: var(--card-bg); border: 1px solid var(--card-border);
   border-radius: 16px; padding: 14px 8px; text-align: center;
-  cursor: pointer; backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  cursor: pointer; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
 }
 .action-btn .icon { font-size: 22px; margin-bottom: 4px; }
 .action-btn .label { font-size: 13px; font-weight: 600; }
 .action-btn .desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
 
-/* 免责声明 */
-.disclaimer {
-  margin-top: 24px; padding: 0 8px;
-  font-size: 11px; color: #9CA3AF; text-align: center; line-height: 1.6;
-}
+.disclaimer { margin-top: 24px; padding: 0 8px; font-size: 11px; color: #9CA3AF; text-align: center; line-height: 1.6; }
 
-/* 弹窗 - 站点选择器 */
 .modal-mask {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-  z-index: 200; display: none;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: none;
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
 }
 .modal-mask.show { display: flex; align-items: flex-end; }
 .modal {
@@ -205,22 +146,17 @@ body {
   font-size: 15px; outline: none;
 }
 .modal-list { overflow-y: auto; padding: 0 16px 20px; }
-.group-title {
-  font-size: 12px; color: var(--text-secondary);
-  margin: 12px 0 6px; font-weight: 600;
-}
+.group-title { font-size: 12px; color: var(--text-secondary); margin: 12px 0 6px; font-weight: 600; }
 .station-option {
   padding: 12px; border-radius: 12px; cursor: pointer;
   display: flex; justify-content: space-between; align-items: center;
 }
 .station-option:active { background: #f3f4f6; }
 
-/* 主题色面板 */
 .theme-panel {
   position: fixed; bottom: 0; left: 0; right: 0;
   background: #fff; border-radius: 24px 24px 0 0;
-  padding: 20px; z-index: 300; display: none;
-  max-width: 480px; margin: 0 auto;
+  padding: 20px; z-index: 300; display: none; max-width: 480px; margin: 0 auto;
 }
 .theme-panel.show { display: block; }
 .theme-panel h3 { font-size: 16px; margin-bottom: 16px; }
@@ -231,33 +167,64 @@ body {
 }
 .theme-swatch.active { border-color: #111827; transform: scale(1.05); }
 
-/* 反向查询结果 */
+/* 反向查询 */
+.reverse-section { margin-bottom: 16px; }
+.reverse-pick {
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 16px; padding: 14px 16px; margin-bottom: 12px;
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+}
+.reverse-pick .hint { font-size: 13px; color: var(--text-secondary); }
 .reverse-group { margin-bottom: 12px; }
 .reverse-group h4 { font-size: 14px; margin-bottom: 8px; color: var(--text-secondary); }
 .reverse-stations { display: flex; flex-wrap: wrap; gap: 6px; }
 .reverse-chip {
-  padding: 6px 12px; border-radius: 10px; font-size: 13px;
+  padding: 8px 12px; border-radius: 10px; font-size: 13px;
   background: var(--card-bg); border: 1px solid var(--card-border);
+  cursor: pointer; transition: all 0.15s;
 }
+.reverse-chip:active { transform: scale(0.96); background: var(--theme-primary-soft); }
+.reverse-chip.dim { opacity: 0.6; }
 .empty { text-align: center; color: var(--text-secondary); padding: 40px 20px; font-size: 14px; }
+
+/* iOS 风格确认弹窗 */
+.ios-dialog-mask {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 400;
+  display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.ios-dialog-mask.show { display: flex; }
+.ios-dialog {
+  width: 82%; max-width: 320px; background: rgba(255,255,255,0.92);
+  border-radius: 16px; overflow: hidden;
+  backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+  animation: pop 0.2s ease-out;
+}
+@keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.ios-dialog-title { padding: 20px 16px 8px; font-size: 16px; font-weight: 700; text-align: center; }
+.ios-dialog-msg { padding: 0 16px 20px; font-size: 14px; color: #374151; text-align: center; line-height: 1.6; white-space: pre-wrap; }
+.ios-dialog-btns { display: flex; border-top: 0.5px solid rgba(0,0,0,0.1); }
+.ios-dialog-btn {
+  flex: 1; padding: 13px; text-align: center; font-size: 16px;
+  background: none; border: none; cursor: pointer; color: var(--theme-primary);
+  font-weight: 500;
+}
+.ios-dialog-btn + .ios-dialog-btn { border-left: 0.5px solid rgba(0,0,0,0.1); }
+.ios-dialog-btn:active { background: rgba(0,0,0,0.06); }
 </style>
 </head>
 <body>
 <div class="app">
-  <!-- 顶部导航 -->
   <div class="navbar">
     <h1>高速免费避坑</h1>
-    <button class="icon-btn" onclick="toggleThemePanel()" title="主题设置">⚙️</button>
   </div>
 
-  <!-- 城市Tab -->
   <div class="city-tabs">
     <div class="city-tab active" data-city="zhengzhou" onclick="switchCity('zhengzhou')">郑州</div>
     <div class="city-tab" data-city="luoyang" onclick="switchCity('luoyang')">洛阳</div>
     <div class="city-tab" data-city="nanyang" onclick="switchCity('nanyang')">南阳</div>
   </div>
 
-  <!-- 起终点选择 -->
   <div class="select-card">
     <div class="station-row" onclick="openPicker('start')">
       <div class="station-label">起点收费站</div>
@@ -272,20 +239,14 @@ body {
     </div>
   </div>
 
-  <!-- 结果区 -->
-  <div id="resultArea">
-    <div class="empty">请选择起点和终点收费站</div>
-  </div>
-
-  <!-- 附加政策提示区 -->
+  <div id="resultArea"><div class="empty">请选择起点和终点收费站</div></div>
   <div id="extraArea"></div>
 
-  <!-- 底部功能 -->
   <div class="action-grid">
-    <div class="action-btn" onclick="showReverse()">
+    <div class="action-btn" onclick="enterReverse()">
       <div class="icon">🔄</div>
       <div class="label">反向查询</div>
-      <div class="desc">该站能免费去哪</div>
+      <div class="desc">选起点看免费可达</div>
     </div>
     <div class="action-btn" onclick="showRules()">
       <div class="icon">📋</div>
@@ -317,10 +278,15 @@ body {
   </div>
 </div>
 
-<!-- 主题色面板 -->
-<div class="theme-panel" id="themePanel">
-  <h3>选择主题色</h3>
-  <div class="theme-row" id="themeRow"></div>
+<!-- iOS 风格确认弹窗 -->
+<div class="ios-dialog-mask" id="iosDialogMask">
+  <div class="ios-dialog">
+    <div class="ios-dialog-title" id="iosDialogTitle">提示</div>
+    <div class="ios-dialog-msg" id="iosDialogMsg"></div>
+    <div class="ios-dialog-btns">
+      <button class="ios-dialog-btn" onclick="closeIosDialog()">好</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -359,7 +325,6 @@ const R_STATIONS = [
   {id:'R031', name:'韩寺站', short:['韩寺','hs'], cat:'R'},
   {id:'R032', name:'园博园站', short:['园博园','wy'], cat:'R'},
 ];
-
 const G_STATIONS = [
   {id:'G001', name:'花园路站', short:['花园路','hyl'], cat:'G'},
   {id:'G002', name:'柳林站', short:['柳林','ll'], cat:'G'},
@@ -371,7 +336,6 @@ const G_STATIONS = [
   {id:'G008', name:'郑庵站', short:['郑庵','za'], cat:'G'},
   {id:'G009', name:'姚家站', short:['姚家','yj'], cat:'G'},
 ];
-
 const B_STATIONS = [
   {id:'B001', name:'中牟新区站', short:['中牟新区','zmxq'], cat:'B'},
   {id:'B002', name:'中牟站', short:['中牟','zm'], cat:'B'},
@@ -385,92 +349,47 @@ const B_STATIONS = [
   {id:'B010', name:'兰考北站', short:['兰考北','lkb'], cat:'B'},
   {id:'B011', name:'兰考西站', short:['兰考西','lkx'], cat:'B'},
 ];
-
-// 洛阳绕城（豫C）21站
 const LY_STATIONS = ['洛阳站','孟津站','洛阳东站','瀍河站','关林站','伊滨站','龙门站','伊阙站','洛龙站','甘泉河站','高新区站','周山站','涧西站','吉利孟州站','会盟站','偃师站','孟津西站','济源东站','济源南站','小浪底南站','偃师东站'];
-
-// 南阳绕城（豫R）7站
 const NY_STATIONS = ['南阳站','光武站','双铺站','翟庄站','卧龙站','遮山站','独山站'];
-
-// 武陟嘉应观补贴相关站点
 const WZ_ZHENGZHOU = ['沟赵站','西三环北站','惠济站','文化路站','花园路站','柳林站','东三环北站','莲花街站','科学大道站','豫龙站','中原西路站','陇海西路站'];
 const WZ_WUZHI = ['嘉应观站','小徐岗站','武陟站'];
 
-// 参考费额（元，整数）：以起站到终点的直达费用
-// key: "startId-endId" -> 金额
 const TOLL = {
-  'R007-B005': 32,  // 科学大道→龙亭
-  'R007-B004': 30,  // 科学大道→开封
-  'R007-B009': 45,  // 科学大道→兰考
-  'R001-B005': 30,  // 沟赵→龙亭
-  'R010-B005': 28,  // 侯寨→龙亭
-  'R024-B005': 60,  // 少林→龙亭
-  'R007-B010': 48,  // 科学大道→兰考北
-  'B005-R007': 32,  // 龙亭→科学大道
-  'B004-R007': 30,
-  'R007-G002': 6,   // 科学大道→柳林
-  'R007-G003': 8,
-  'G002-B005': 25,  // 柳林→龙亭
-  'G003-B005': 24,
+  'R007-B005': 32, 'R007-B004': 30, 'R007-B009': 45, 'R001-B005': 30,
+  'R010-B005': 28, 'R024-B005': 60, 'R007-B010': 48,
+  'B005-R007': 32, 'B004-R007': 30,
 };
-
-// G站中转推荐：从红圈西部/南部上到蓝道，推荐哪些G站
-// R类站点到B类站点时的推荐G站（按顺路程度）
 const RECOMMEND_G = {
-  'north': ['G002', 'G003', 'G001'],  // 连霍方向：柳林、东三环北、花园路
-  'east': ['G004', 'G005'],            // 郑州新区、圃田
-  'south': ['G006', 'G007', 'G008', 'G009'], // 航海路、南三环、郑庵、姚家
+  north: ['G002', 'G003', 'G001'],
+  east: ['G004', 'G005'],
+  south: ['G006', 'G007', 'G008', 'G009'],
 };
 
 // ============ 状态 ============
 let currentCity = 'zhengzhou';
-let currentPicker = 'start'; // 'start' | 'end'
-let startStation = R_STATIONS.find(s => s.id === 'R007'); // 科学大道
-let endStation = B_STATIONS.find(s => s.id === 'B005');   // 龙亭
+let currentPicker = 'start';
+let startStation = R_STATIONS.find(s => s.id === 'R007');
+let endStation = B_STATIONS.find(s => s.id === 'B005');
+let reverseMode = false;
 
-// ============ 主题色 ============
-const THEMES = [
-  {name:'经典蓝', color:'#0B5FD0'},
-  {name:'翡翠绿', color:'#10B981'},
-  {name:'樱花粉', color:'#EC4899'},
-  {name:'琥珀橙', color:'#F59E0B'},
-  {name:'暗夜紫', color:'#8B5CF6'},
-];
+// iOS 风格弹窗
+function showIosDialog(title, msg) {
+  document.getElementById('iosDialogTitle').textContent = title;
+  document.getElementById('iosDialogMsg').textContent = msg;
+  document.getElementById('iosDialogMask').classList.add('show');
+}
+function closeIosDialog() { document.getElementById('iosDialogMask').classList.remove('show'); }
 
-function initTheme() {
-  const saved = localStorage.getItem('theme-color') || '#0B5FD0';
-  applyTheme(saved);
-  const row = document.getElementById('themeRow');
-  row.innerHTML = '';
-  THEMES.forEach(t => {
-    const sw = document.createElement('div');
-    sw.className = 'theme-swatch' + (t.color === saved ? ' active' : '');
-    sw.style.background = t.color;
-    sw.onclick = () => { applyTheme(t.color); initTheme(); };
-    row.appendChild(sw);
-  });
-}
-function applyTheme(color) {
-  document.documentElement.style.setProperty('--theme-primary', color);
-  document.documentElement.style.setProperty('--theme-primary-soft', color + '20');
-  localStorage.setItem('theme-color', color);
-}
-function toggleThemePanel() {
-  document.getElementById('themePanel').classList.toggle('show');
-}
-
-// ============ 城市切换 ============
 function switchCity(city) {
   currentCity = city;
-  document.querySelectorAll('.city-tab').forEach(t => {
-    t.classList.toggle('active', t.dataset.city === city);
-  });
+  reverseMode = false;
+  document.querySelectorAll('.city-tab').forEach(t => t.classList.toggle('active', t.dataset.city === city));
   if (city === 'luoyang') {
-    startStation = {id:'LY01', name: LY_STATIONS[0], cat:'R'};
-    endStation = {id:'LY02', name: LY_STATIONS[1], cat:'R'};
+    startStation = {id:'LY01', name: LY_STATIONS[0], cat:'LY'};
+    endStation = {id:'LY02', name: LY_STATIONS[1], cat:'LY'};
   } else if (city === 'nanyang') {
-    startStation = {id:'NY01', name: NY_STATIONS[0], cat:'R'};
-    endStation = {id:'NY02', name: NY_STATIONS[1], cat:'R'};
+    startStation = {id:'NY01', name: NY_STATIONS[0], cat:'NY'};
+    endStation = {id:'NY02', name: NY_STATIONS[1], cat:'NY'};
   } else {
     startStation = R_STATIONS.find(s => s.id === 'R007');
     endStation = B_STATIONS.find(s => s.id === 'B005');
@@ -478,19 +397,24 @@ function switchCity(city) {
   render();
 }
 
-// ============ 渲染 ============
-function catTag(cat) {
+function catTagHtml(cat) {
   if (cat === 'R') return '<span class="station-tag tag-r">属：郑州主城体系</span>';
   if (cat === 'B') return '<span class="station-tag tag-b">属：郑开兰体系</span>';
   if (cat === 'G') return '<span class="station-tag tag-g">属：绿色换乘节点</span>';
+  if (cat === 'LY') return '<span class="station-tag tag-luoyang">属：洛阳绕城免费圈（豫C）</span>';
+  if (cat === 'NY') return '<span class="station-tag tag-nanyang">属：南阳绕城免费圈（豫R）</span>';
   return '';
 }
 
 function render() {
   document.getElementById('startName').textContent = startStation.name;
   document.getElementById('endName').textContent = endStation.name;
-  document.getElementById('startTag').outerHTML = catTag(startStation.cat).replace('class="', 'id="startTag" class="');
-  document.getElementById('endTag').outerHTML = catTag(endStation.cat).replace('class="', 'id="endTag" class="');
+  const st = document.getElementById('startTag');
+  st.outerHTML = catTagHtml(startStation.cat).replace('class="', 'id="startTag" class="');
+  const et = document.getElementById('endTag');
+  et.outerHTML = catTagHtml(endStation.cat).replace('class="', 'id="endTag" class="');
+
+  if (reverseMode) { renderReverse(); return; }
   renderResult();
   renderExtra();
 }
@@ -498,13 +422,12 @@ function render() {
 function renderResult() {
   const area = document.getElementById('resultArea');
   if (currentCity === 'luoyang') {
-    // 洛阳绕城：上下站都在21站内即免费
     const s = LY_STATIONS.includes(startStation.name);
     const e = LY_STATIONS.includes(endStation.name);
     if (s && e) {
-      area.innerHTML = '<div class="result-card result-ok"><div class="result-title">🎉 本次通行免费</div><div class="result-reason">上下站均在洛阳绕城免费站点内（豫C ETC 小型客车）</div></div>';
+      area.innerHTML = '<div class="result-card result-ok"><div class="result-title">本次通行免费</div><div class="result-reason">上下站均在洛阳绕城免费站点内（豫C ETC 小型客车）</div></div>';
     } else {
-      area.innerHTML = `<div class="result-card result-warn"><div class="result-header"><div class="result-title">直接导航：不免费</div></div><div class="result-reason">需上下站均在洛阳绕城 21 个免费站点内才免费。${!s ? '起点"'+startStation.name+'"不在免费站点。' : ''}${!e ? '终点"'+endStation.name+'"不在免费站点。' : ''}</div></div>`;
+      area.innerHTML = `<div class="result-card result-warn"><div class="result-header"><div class="result-title">直接导航：不免费</div></div><div class="result-reason">需上下站均在洛阳绕城 21 个免费站点内。${!s ? '起点不在免费站点。' : ''}${!e ? '终点不在免费站点。' : ''}</div></div>`;
     }
     return;
   }
@@ -512,42 +435,28 @@ function renderResult() {
     const s = NY_STATIONS.includes(startStation.name);
     const e = NY_STATIONS.includes(endStation.name);
     if (s && e) {
-      area.innerHTML = '<div class="result-card result-ok"><div class="result-title">🎉 本次通行免费</div><div class="result-reason">上下站均在南阳绕城 7 个免费站点内（豫R ETC 小型客车）</div></div>';
+      area.innerHTML = '<div class="result-card result-ok"><div class="result-title">本次通行免费</div><div class="result-reason">上下站均在南阳绕城免费站点内（豫R ETC 小型客车）</div></div>';
     } else {
       area.innerHTML = `<div class="result-card result-warn"><div class="result-header"><div class="result-title">直接导航：不免费</div></div><div class="result-reason">需上下站均在南阳绕城免费站点内。${!s ? '起点不在免费站点。' : ''}${!e ? '终点不在免费站点。' : ''}</div></div>`;
     }
     return;
   }
 
-  // 郑州主规则
   const sc = startStation.cat, ec = endStation.cat;
   const key = startStation.id + '-' + endStation.id;
   const toll = TOLL[key];
-
-  // 免费矩阵
-  const freePairs = [
-    ['R','R'], ['R','G'],
-    ['B','B'], ['B','G'],
-    ['G','R'], ['G','G'], ['G','B'],
-  ];
+  const freePairs = [['R','R'],['R','G'],['B','B'],['B','G'],['G','R'],['G','G'],['G','B']];
   const isFree = freePairs.some(([a,b]) => a === sc && b === ec);
 
   if (isFree) {
     area.innerHTML = `<div class="result-card result-ok">
-      <div class="result-title">🎉 本次通行免费</div>
+      <div class="result-title">本次通行免费</div>
       <div class="result-reason">${sc === 'G' ? '绿色换乘节点出发，任意站下均免费' : (sc === ec ? '同体系内通行，政府统缴' : '跨节点通行，政府统缴')}</div>
     </div>`;
     return;
   }
 
-  // 收费场景：R→B 或 B→R
-  // 推荐G站
-  let recommendGs;
-  if (sc === 'R') {
-    recommendGs = [RECOMMEND_G.north[0], RECOMMEND_G.north[1]];
-  } else {
-    recommendGs = [RECOMMEND_G.north[0], RECOMMEND_G.north[1]];
-  }
+  const recommendGs = [RECOMMEND_G.north[0], RECOMMEND_G.north[1]];
   const gNames = recommendGs.map(gid => {
     const g = G_STATIONS.find(s => s.id === gid);
     return g ? g.name : '';
@@ -578,17 +487,10 @@ function renderResult() {
 function renderExtra() {
   const area = document.getElementById('extraArea');
   if (currentCity !== 'zhengzhou') { area.innerHTML = ''; return; }
-  // 检查是否命中武陟嘉应观补贴
   const sName = startStation.name, eName = endStation.name;
   const hitWZ = (WZ_ZHENGZHOU.includes(sName) && WZ_WUZHI.includes(eName)) ||
                 (WZ_ZHENGZHOU.includes(eName) && WZ_WUZHI.includes(sName));
-  if (hitWZ) {
-    area.innerHTML = `<div class="extra-tip">
-      💡 附加政策：该行程符合武陟嘉应观双向补贴条件。豫A/V 7座以下 ETC 小客车，上下站间隔≥2小时，通行费按月补贴返还 ETC 账户。
-    </div>`;
-  } else {
-    area.innerHTML = '';
-  }
+  area.innerHTML = hitWZ ? `<div class="extra-tip">💡 附加政策：该行程符合武陟嘉应观双向补贴条件。豫A/V 7座以下 ETC 小客车，上下站间隔≥2小时，通行费按月补贴返还 ETC 账户。</div>` : '';
 }
 
 // ============ 站点选择器 ============
@@ -599,33 +501,27 @@ function openPicker(type) {
   document.getElementById('pickerSearch').value = '';
   renderStationList();
 }
-function closePicker() {
-  document.getElementById('pickerMask').classList.remove('show');
-}
+function closePicker() { document.getElementById('pickerMask').classList.remove('show'); }
+
 function renderStationList() {
   const q = document.getElementById('pickerSearch').value.trim().toLowerCase();
   const list = document.getElementById('modalList');
   let html = '';
-
   if (currentCity === 'luoyang') {
     const filtered = LY_STATIONS.filter(n => !q || n.includes(q) || n.toLowerCase().includes(q));
     html += '<div class="group-title">洛阳绕城免费站点（豫C）</div>';
     filtered.forEach(n => {
-      html += `<div class="station-option" onclick="pickStation({id:'LY_${n}',name:'${n}',cat:'R'})"><span>${n}</span><span class="station-tag tag-r">免费圈</span></div>`;
+      html += `<div class="station-option" onclick="pickStation({id:'LY_${n}',name:'${n}',cat:'LY'})"><span>${n}</span><span class="station-tag tag-luoyang">免费圈</span></div>`;
     });
   } else if (currentCity === 'nanyang') {
     const filtered = NY_STATIONS.filter(n => !q || n.includes(q) || n.toLowerCase().includes(q));
     html += '<div class="group-title">南阳绕城免费站点（豫R）</div>';
     filtered.forEach(n => {
-      html += `<div class="station-option" onclick="pickStation({id:'NY_${n}',name:'${n}',cat:'R'})"><span>${n}</span><span class="station-tag tag-r">免费圈</span></div>`;
+      html += `<div class="station-option" onclick="pickStation({id:'NY_${n}',name:'${n}',cat:'NY'})"><span>${n}</span><span class="station-tag tag-nanyang">免费圈</span></div>`;
     });
   } else {
     const all = [...R_STATIONS, ...G_STATIONS, ...B_STATIONS];
-    const filtered = all.filter(s => {
-      if (!q) return true;
-      if (s.name.includes(q)) return true;
-      return s.short.some(sh => sh.toLowerCase().includes(q));
-    });
+    const filtered = all.filter(s => !q || s.name.includes(q) || s.short.some(sh => sh.toLowerCase().includes(q)));
     const groups = [
       {title:'红色站点 · 郑州主城体系', list: filtered.filter(s => s.cat === 'R'), tag:'tag-r'},
       {title:'绿色站点 · 换乘节点', list: filtered.filter(s => s.cat === 'G'), tag:'tag-g'},
@@ -641,22 +537,31 @@ function renderStationList() {
   }
   list.innerHTML = html || '<div class="empty">未找到匹配站点</div>';
 }
+
 function pickStation(s) {
   if (currentPicker === 'start') startStation = s; else endStation = s;
   closePicker();
+  reverseMode = false;
   render();
 }
 function swapStations() {
   [startStation, endStation] = [endStation, startStation];
+  reverseMode = false;
   render();
 }
 
-// ============ 反向查询 ============
-function showReverse() {
+// ============ 反向查询（重做） ============
+function enterReverse() {
   if (currentCity !== 'zhengzhou') {
-    alert('反向查询仅支持郑州体系');
+    showIosDialog('提示', '反向查询功能仅支持郑州体系\n（红/绿/蓝三站组合）');
     return;
   }
+  reverseMode = true;
+  renderReverse();
+}
+
+function renderReverse() {
+  const area = document.getElementById('resultArea');
   const sc = startStation.cat;
   let freeTo = [], needTransfer = [];
   if (sc === 'R') {
@@ -668,51 +573,68 @@ function showReverse() {
   } else {
     freeTo = [...R_STATIONS, ...G_STATIONS, ...B_STATIONS];
   }
-  let html = `<div class="result-card"><div class="result-title" style="font-size:16px;margin-bottom:12px">从 ${startStation.name} 出发：</div>`;
-  html += `<div class="reverse-group"><h4>✅ 可免费直达（${freeTo.length} 站）</h4><div class="reverse-stations">`;
-  freeTo.slice(0, 30).forEach(s => {
-    html += `<span class="reverse-chip">${s.name}</span>`;
+
+  let html = `<div class="result-card">
+    <div class="result-header" style="margin-bottom:12px">
+      <div class="result-title" style="font-size:16px">从 ${startStation.name} 出发</div>
+    </div>
+    <div class="result-reason" style="margin-bottom:12px">点击下方任意站点，可直接设为终点并开始计算</div>
+    <div class="reverse-group">
+      <h4>✅ 可免费直达（${freeTo.length} 站）</h4>
+      <div class="reverse-stations">`;
+  freeTo.forEach(s => {
+    html += `<span class="reverse-chip" onclick="pickReverseEnd('${s.id}','${s.name}','${s.cat}')">${s.name}</span>`;
   });
   html += `</div></div>`;
   if (needTransfer.length > 0) {
-    html += `<div class="reverse-group"><h4>⚠️ 需在 G 站中转一次（${needTransfer.length} 站）</h4><div class="reverse-stations">`;
-    needTransfer.slice(0, 20).forEach(s => {
-      html += `<span class="reverse-chip" style="opacity:0.7">${s.name}</span>`;
+    html += `<div class="reverse-group">
+      <h4>⚠️ 需在绿色站中转一次（${needTransfer.length} 站）</h4>
+      <div class="reverse-stations">`;
+    needTransfer.forEach(s => {
+      html += `<span class="reverse-chip dim" onclick="pickReverseEnd('${s.id}','${s.name}','${s.cat}')">${s.name}</span>`;
     });
     html += `</div></div>`;
   }
-  html += `</div>`;
-  document.getElementById('resultArea').innerHTML = html;
+  html += `<div style="margin-top:12px;text-align:center">
+      <button onclick="reverseMode=false;render()" style="padding:10px 20px;border-radius:12px;border:1px solid #ddd;background:#fff;cursor:pointer;font-size:14px">返回正常查询</button>
+    </div></div>`;
+  area.innerHTML = html;
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-// ============ 规则速查 ============
-function showRules() {
-  alert(`免费规则矩阵（郑州体系）：
-
-红上 → 红下：免费
-红上 → 绿下：免费
-蓝上 → 蓝下：免费
-蓝上 → 绿下：免费
-绿上 → 任意下：免费
-————
-红上 → 蓝下：收费，需在绿站中转
-蓝上 → 红下：收费，需在绿站中转`);
+function pickReverseEnd(id, name, cat) {
+  endStation = {id, name, cat};
+  reverseMode = false;
+  render();
+  window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
+// ============ 规则速查 / 关于 ============
+function showRules() {
+  showIosDialog('免费规则矩阵（郑州体系）',
+`红站 → 红站：免费
+红站 → 绿站：免费
+蓝站 → 蓝站：免费
+蓝站 → 绿站：免费
+绿站 → 任意站：免费
+———————
+红站 → 蓝站：收费
+　需在绿站中转一次
+蓝站 → 红站：收费
+　需在绿站中转一次`);
+}
 function showAbout() {
-  alert(`豫A/豫V 高速免费避坑计算器
+  showIosDialog('关于本工具',
+`豫A/豫V 高速免费避坑计算器
 
-数据来源：郑州市政府、河南省政府、大象新闻 2026年9月公告。
+数据来源：郑州市政府、河南省政府、大象新闻 2026 年 9 月公告。
 绿色站点 = 两体系交集（花园路/柳林/东三环北/郑州新区/圃田/航海路/南三环/郑庵/姚家）。
 附加政策：武陟嘉应观补贴、郑新黄河大桥精准补贴、洛阳绕城（豫C）、南阳绕城（豫R）。
 
 实际扣费以 ETC 记录为准。`);
 }
 
-// 初始化
 render();
-initTheme();
 </script>
 </body>
 </html>
