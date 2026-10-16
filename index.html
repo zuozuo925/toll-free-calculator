@@ -2,12 +2,14 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0B5FD0">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="河南高速免费查询">
-<title>河南高速免费查询工具</title>
+<meta name="format-detection" content="telephone=no">
+<title>河南高速免费查询</title>
 <link rel="apple-touch-icon" href="app_icon.png">
 <link rel="icon" type="image/png" href="app_icon.png">
 <style>
@@ -26,9 +28,11 @@
   --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { touch-action: manipulation; overscroll-behavior-y: none; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
   background: var(--bg-gradient); color: var(--text-primary); min-height: 100vh; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; user-select: none; -webkit-user-select: none;
 }
 .app { max-width: 480px; margin: 0 auto; padding: 0 16px 40px; }
 
@@ -197,7 +201,8 @@ body {
 <body>
 <div class="app">
   <div class="navbar">
-    <h1>河南高速免费查询工具</h1>
+    <h1>高速免费查询</h1>
+    <div style="font-size:12px;color:#6B7280;font-weight:400;margin-top:2px">豫A/V · 豫C · 豫R ETC 小客车</div>
   </div>
 
   <div class="city-tabs">
@@ -220,30 +225,30 @@ body {
     </div>
   </div>
 
-  <div id="resultArea"><div class="empty">请选择起点和终点收费站</div></div>
+  <div id="resultArea"><div class="empty" style="padding:60px 20px">选择上下站，一键测算通行费</div></div>
   <div id="extraArea"></div>
 
   <div class="action-grid">
     <div class="action-btn" onclick="openReverseModal()">
       <div class="icon">🔄</div>
       <div class="label">反向查询</div>
-      <div class="desc">该站免费去哪</div>
+      <div class="desc">这站能免费去哪</div>
     </div>
     <div class="action-btn" onclick="showRules()">
       <div class="icon">📋</div>
-      <div class="label">规则速查</div>
-      <div class="desc">各城市规则矩阵</div>
+      <div class="label">规则</div>
+      <div class="desc">免费/收费判定</div>
     </div>
     <div class="action-btn" onclick="showAbout()">
-      <div class="icon">ℹ️</div>
+      <div class="icon">⚙️</div>
       <div class="label">关于</div>
-      <div class="desc">政策与免责</div>
+      <div class="desc">政策与版本</div>
     </div>
   </div>
 
   <div class="disclaimer">
-    数据核对日期：2026-10-16<br>
-    本工具仅供参考，免费政策以交通运输主管部门及收费站现场公示为准。实际扣费以 ETC 记录为准。
+    <div>v1.2 · 数据更新于 2026.10</div>
+    <div style="margin-top:4px">实际通行以收费站 ETC 记录为准</div>
   </div>
 </div>
 
@@ -651,40 +656,35 @@ pickStation = function(s) {
 
 // ============ 规则速查 / 关于 ============
 function showRules() {
-  showIosDialog('规则速查',
-`【郑州体系】
-红站 → 红站：免费
-红站 → 绿站：免费
-蓝站 → 蓝站：免费
-蓝站 → 绿站：免费
+  showIosDialog('判定规则',
+`【郑州】
+红站 → 红站 / 绿站：免费
+蓝站 → 蓝站 / 绿站：免费
 绿站 → 任意站：免费
-红站 → 蓝站：收费，需绿站中转
-蓝站 → 红站：收费，需绿站中转
+红站 ↔ 蓝站：收费，需在绿站
+原地掉头重刷 ETC 一次
 
-【洛阳绕城（豫C）】
-上下站均在 21 个免费站点内：免费
-任意一站不在免费圈：收费
+【洛阳】
+豫C 上下站均在绕城 21 站内：免费
 
-【南阳绕城（豫R）】
-上下站均在 7 个免费站点内：免费
-任意一站不在免费圈：收费`);
+【南阳】
+豫R 上下站均在绕城 7 站内：免费`);
 }
 
 function showAbout() {
-  showIosDialog('关于本工具',
-`河南高速免费查询工具
+  showIosDialog('关于',
+`高速免费查询 v1.2
 
-【覆盖范围】
-· 郑州：豫A/豫V ETC 小客车，红/绿/蓝三站组合规则
-· 洛阳：豫C ETC 小客车，21 站绕城免费圈
-· 南阳：豫R ETC 小客车，7 站绕城免费圈
+覆盖城市：郑州 · 洛阳 · 南阳
+适用车辆：ETC 小型客车
 
-【附加政策】
-· 武陟嘉应观双向补贴（郑州 12 站 ↔ 武陟 3 站）
-· 郑新黄河大桥精准补贴（平原示范区）
+郑州：豫A / 豫V
+洛阳：豫C
+南阳：豫R
 
-数据来源：郑州市政府、河南省政府、大象新闻 2026 年公告。
-实际扣费以 ETC 记录为准。`);
+数据来源：2026 年郑州市政府、
+河南省交通厅公告。
+实际通行费以 ETC 记录为准。`);
 }
 
 render();
