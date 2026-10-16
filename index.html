@@ -592,15 +592,15 @@ async function analyzeNational() {
     // 但这里是"从圈内到圈外"的场景：在圈边缘站下再上
 
     // 找路线上最靠终点方向的圈内站（即中转点）
-    // 按距离终点的远近排序，最远的那个圈内站就是中转点
+    // 中转点 = 离终点最近的那个圈内站（过了这个站就出圈，开始收费）
     const freeZoneStations = routeStations.filter(s => s.cat === 'R' || s.cat === 'G');
-    // 按距离终点从远到近排序
+    // 按距离终点从近到远排序
     freeZoneStations.sort((a, b) => {
       const da = distToStation(dLng, dLat, a);
       const db = distToStation(dLng, dLat, b);
-      return db - da; // 距离终点越远的排前面
+      return da - db; // 距离终点越近的排前面
     });
-    const transferStation = freeZoneStations[0]; // 最靠终点的圈内站
+    const transferStation = freeZoneStations[0]; // 最靠近终点的圈内站
 
     let planHtml = '';
 
@@ -617,7 +617,9 @@ async function analyzeNational() {
     } else {
       // 终点在圈外，需要在中转点下再上
       const isGreenStart = startStation.cat === 'G';
-      const saveFee = Math.round(totalKm * 0.5 * (freeZoneStations.length / routeStations.length + 0.1));
+      // 免费段距离 = 起点站 → 中转点 的直线距离×1.05
+      const freeKm = distToStation(startStation.lng, startStation.lat, transferStation) * 1.05;
+      const saveFee = Math.round(freeKm * 0.5);
 
       let steps = [];
       steps.push(`第 1 步：从 <b>${startStation.name}</b> 上高速${isGreenStart ? '（绿站，任意方向都免费）' : '（红站）'}`);
