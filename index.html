@@ -556,9 +556,14 @@ async function analyzeNational() {
     const routeStations = getStationsOnRoute(route);
 
     if (routeStations.length === 0) {
-      result.innerHTML = `<div class="result-card result-warn">
-        <div class="result-title">该路线不经过郑州免费圈</div>
-        <div class="result-reason">全程约 ${totalKm} km · ${totalMin} 分钟 · 正常 ETC 收费。</div>
+      // 判断是不是走城市快速路（不收费）
+      const roadNames = (route.steps || []).map(s => s.road).join(' ');
+      const hasHighway = /高速|连霍|京港澳|机场高速|绕城/.test(roadNames);
+      const isUrbanRoad = !hasHighway;
+
+      result.innerHTML = `<div class="result-card ${isUrbanRoad ? 'result-ok' : 'result-warn'}">
+        <div class="result-title">${isUrbanRoad ? '✅ 此路线不收费' : '该路线不经过郑州免费圈'}</div>
+        <div class="result-reason">全程约 ${totalKm} km · ${totalMin} 分钟${isUrbanRoad ? ' · 高德推荐走城市快速路（如郑开大道），全程不收费，无需蹭免费。' : ' · 正常 ETC 收费。'}</div>
       </div>
       <div class="nav-row">
         <button class="nav-btn baidu" onclick="navBaidu()">🚗 百度地图导航</button>
