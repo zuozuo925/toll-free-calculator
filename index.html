@@ -524,18 +524,35 @@ async function analyzeNational() {
     const totalKm = (parseInt(route.distance)/1000).toFixed(0);
     const totalMin = Math.round(parseInt(route.duration)/60);
 
-    // 找出最近的上站（在郑州范围内的R/G站）
+    // 找出起点附近所有候选站（直线15km内），然后算实际驾车距离选最顺的
     const [oLng, oLat] = geoO.location.split(',').map(Number);
-    const nearby = [...R_STATIONS, ...G_STATIONS].map(s => ({...s, d: distToStation(oLng, oLat, s)})).sort((a,b) => a.d - b.d);
-    const startStation = nearby[0];
+    const candidates = [...R_STATIONS, ...G_STATIONS]
+      .map(s => ({...s, straight: distToStation(oLng, oLat, s)}))
+      .filter(s => s.straight < 15)
+      .sort((a,b) => a.straight - b.straight)
+      .slice(0, 6);
 
-    // 判断路线是否经过郑州绕城段
-    const steps = route.steps || [];
-    const roadNames = steps.map(s => s.road).join(' ');
+    // 对每个候选站算实际驾车距离
+    let startStation = candidates[0];
+    let bestDrivingDist = Infinity;
+    for (const c of candidates) {
+      try {
+        const r = await drivingRoute(geoO.location, `${c.lng},${c.lat}`);
+        if (r) {
+          const dist = parseInt(r.distance);
+          if (dist < bestDrivingDist) {
+            bestDrivingDist = dist;
+            startStation = c;
+          }
+        }
+      } catch(e) {}
+    }
+
+    const roadNames = (route.steps || []).map(s => s.road).join(' ');
     const passesZZ = /郑州绕城|连霍高速|京港澳高速|机场高速|西南绕城|郑州西南|柳林|花园路|圃田|航海路|南三环/.test(roadNames);
 
     let planHtml = '';
-    if (passesZZ && startStation.d < 15) {
+    if (passesZZ && startStation.straight < 15) {
       // 起点站类型决定是否需要绿站中转
       const isGreenStart = startStation.cat === 'G';
       
