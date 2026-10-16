@@ -465,6 +465,17 @@ function switchCity(city) {
 // ============ 全国路线分析（接入高德地图API） ============
 const AMAP_KEY = 'a5baadb9a595b1c4cdeaa6cb1596ba53';
 
+// 高速站点映射（按走向排列）
+const HIGHWAY_STATIONS = {
+  '连霍高速': ['R001','R002','R003','R004','G001','G002','G003','G004','G005','B002','B003','B004','B005','B006','B011','B009','B010'],
+  '京港澳高速': ['R025','R027','R026'],
+  '西南绕城高速': ['R007','R008','R017','R010','R011','R015','R013','R016'],
+  '机场高速': ['G007','G006','G005','G004','R027','R028'],
+  '郑少洛高速': ['R017','R018','R019','R020','R021','R022','R023','R024'],
+  '商登高速': ['R027','R030','R031','R032'],
+  '安罗高速': ['R032'],
+};
+
 function amapJsonp(path, params) {
   return new Promise((resolve, reject) => {
     const cb = 'amap_cb_' + Math.random().toString(36).slice(2);
@@ -500,6 +511,21 @@ function distToStation(lng, lat, st) {
   return Math.sqrt(dx*dx + dy*dy);
 }
 
+// 根据路线经过的高速，列出路线上的所有站点
+function getStationsOnRoute(route) {
+  const roadNames = (route.steps || []).map(s => s.road).join(' ');
+  const stations = [];
+  for (const [hw, ids] of Object.entries(HIGHWAY_STATIONS)) {
+    if (roadNames.includes(hw)) {
+      ids.forEach(id => {
+        const st = ALL_STATIONS.find(s => s.id === id);
+        if (st && !stations.find(s => s.id === id)) stations.push(st);
+      });
+    }
+  }
+  return stations;
+}
+
 async function analyzeNational() {
   const o = document.getElementById('natStart').value.trim();
   const d = document.getElementById('natEnd').value.trim();
@@ -511,7 +537,7 @@ async function analyzeNational() {
   try {
     const [geoO, geoD] = await Promise.all([geocode(o), geocode(d)]);
     if (!geoO || !geoD) {
-      result.innerHTML = '<div class="result-card result-warn"><div class="result-title">⚠️ 地址识别失败</div><div class="result-reason">请换个更完整的地址再试，比如"郑州市高新区科学大道100号"</div></div>';
+      result.innerHTML = '<div class="result-card result-warn"><div class="result-title">⚠️ 地址识别失败</div><div class="result-reason">请换个更完整的地址再试</div></div>';
       return;
     }
 
@@ -523,78 +549,93 @@ async function analyzeNational() {
 
     const totalKm = (parseInt(route.distance)/1000).toFixed(0);
     const totalMin = Math.round(parseInt(route.duration)/60);
-
-    // 找出起点附近所有候选站（直线15km内），然后算实际驾车距离选最顺的
     const [oLng, oLat] = geoO.location.split(',').map(Number);
-    const candidates = [...R_STATIONS, ...G_STATIONS]
-      .map(s => ({...s, straight: distToStation(oLng, oLat, s)}))
-      .filter(s => s.straight < 15)
-      .sort((a,b) => a.straight - b.straight)
-      .slice(0, 6);
+    const [dLng, dLat] = geoD.location.split(',').map(Number);
 
-    // 对每个候选站算实际驾车距离
-    let startStation = candidates[0];
-    let bestDrivingDist = Infinity;
-    for (const c of candidates) {
-      try {
-        const r = await drivingRoute(geoO.location, `${c.lng},${c.lat}`);
-        if (r) {
-          const dist = parseInt(r.distance);
-          if (dist < bestDrivingDist) {
-            bestDrivingDist = dist;
-            startStation = c;
-          }
-        }
-      } catch(e) {}
+    // 1. 找出路线上经过的所有站点
+    const routeStations = getStationsOnRoute(route);
+
+    if (routeStations.length === 0) {
+      result.innerHTML = `<div class="result-card result-warn">
+        <div class="result-title">该路线不经过郑州免费圈</div>
+        <div class="result-reason">全程约 ${totalKm} km · ${totalMin} 分钟 · 正常 ETC 收费。</div>
+      </div>
+      <div class="nav-row">
+        <button class="nav-btn baidu" onclick="navBaidu()">🚗 百度地图导航</button>
+        <button class="nav-btn gaode" onclick="navGaode()">🧭 高德地图导航</button>
+      </div>`;
+      return;
     }
 
-    const roadNames = (route.steps || []).map(s => s.road).join(' ');
-    const passesZZ = /郑州绕城|连霍高速|京港澳高速|机场高速|西南绕城|郑州西南|柳林|花园路|圃田|航海路|南三环/.test(roadNames);
+    // 2. 找起点最近的上站（在路线站点中找）
+    let startStation = routeStations[0];
+    let minDist = Infinity;
+    for (const st of routeStations) {
+      const dist = distToStation(oLng, oLat, st);
+      if (dist < minDist) { minDist = dist; startStation = st; }
+    }
+
+    // 3. 判断终点是否在免费圈内（在路线站点中找离终点最近的站）
+    let endStation = routeStations[0];
+    let minEndDist = Infinity;
+    for (const st of routeStations) {
+      const dist = distToStation(dLng, dLat, st);
+      if (dist < minEndDist) { minEndDist = dist; endStation = st; }
+    }
+
+    // 4. 判断终点是否在圈内（离终点最近的站 < 10km 算在圈内）
+    const endInFreeZone = minEndDist < 10;
+
+    // 5. 根据规则推荐方案
+    // 圈内=R/G站，圈外=不在路线站点中的区域
+    // 规则：R→R/R→G/G→任意=免费；R→B/B→R=收费需G中转
+    // 但这里是"从圈内到圈外"的场景：在圈边缘站下再上
+
+    // 找路线上最靠终点方向的圈内站（即中转点）
+    // 按距离终点的远近排序，最远的那个圈内站就是中转点
+    const freeZoneStations = routeStations.filter(s => s.cat === 'R' || s.cat === 'G');
+    // 按距离终点从远到近排序
+    freeZoneStations.sort((a, b) => {
+      const da = distToStation(dLng, dLat, a);
+      const db = distToStation(dLng, dLat, b);
+      return db - da; // 距离终点越远的排前面
+    });
+    const transferStation = freeZoneStations[0]; // 最靠终点的圈内站
 
     let planHtml = '';
-    if (passesZZ && startStation.straight < 15) {
-      // 起点站类型决定是否需要绿站中转
+
+    if (endInFreeZone) {
+      // 终点也在圈内，全程免费
+      planHtml = `<div class="result-card result-ok">
+        <div class="result-title">✅ 全程免费</div>
+        <div class="result-reason">
+          起点：${geoO.formatted}<br>
+          终点：${geoD.formatted}<br>
+          全程约 ${totalKm} km · 上下站均在郑州免费圈内，政府统缴。
+        </div>
+      </div>`;
+    } else {
+      // 终点在圈外，需要在中转点下再上
       const isGreenStart = startStation.cat === 'G';
-      
-      // 根据终点方向选边缘站（路线上最靠终点方向的郑州体系内站）
-      let edgeStation;
-      // 判断终点在郑州的哪个方向
-      const [dLng, dLat] = geoD.location.split(',').map(Number);
-      if (dLng > oLng && dLat < oLat) {
-        // 东南方向（淮阳/周口/漯河）
-        edgeStation = '园博园站 / 机场站北口';
-      } else if (dLng > oLng && dLat >= oLat) {
-        // 东边方向（开封/兰考）
-        edgeStation = '开封站 / 龙亭站';
-      } else if (dLng < oLng && dLat < oLat) {
-        // 西南方向（许昌/南阳）
-        edgeStation = '机场站北口';
-      } else {
-        edgeStation = '郑州西南站 / 南三环站';
-      }
+      const saveFee = Math.round(totalKm * 0.5 * (freeZoneStations.length / routeStations.length + 0.1));
 
-      const saveFee = Math.round(totalKm * 0.5 * 0.35);
       let steps = [];
-
       steps.push(`第 1 步：从 <b>${startStation.name}</b> 上高速${isGreenStart ? '（绿站，任意方向都免费）' : '（红站）'}`);
-      
+
       if (!isGreenStart) {
-        // 起点是红站，需要在绿站中转一次
-        let greenTransfer;
-        if (oLng < 113.65) {
-          greenTransfer = '南三环站 / 航海路站';
-        } else if (oLat > 34.82) {
-          greenTransfer = '柳林站 / 东三环北站';
-        } else {
-          greenTransfer = '圃田站 / 郑州新区站';
+        // 起点是红站，需要在绿站中转一次（把红→红拆成红→绿→红）
+        // 找路线上的绿站
+        const greenStations = routeStations.filter(s => s.cat === 'G');
+        if (greenStations.length > 0) {
+          const greenTransfer = greenStations[0];
+          steps.push(`第 2 步：在 <b style="color:#16A34A">${greenTransfer.name}</b>（绿站）下高速，原地掉头重刷 ETC 再上`);
         }
-        steps.push(`第 2 步：在 <b style="color:#16A34A">${greenTransfer}</b>（绿站）下高速，原地掉头重刷 ETC 再上`);
-        steps.push(`第 3 步：继续行驶，在 <b>${edgeStation}</b> 下高速，原地掉头重刷 ETC 再上`);
+        steps.push(`第 ${steps.length} 步：继续行驶，在 <b>${transferStation.name}</b>（${transferStation.cat === 'R' ? '红站' : '绿站'}）下高速，原地掉头重刷 ETC 再上`);
       } else {
-        // 起点是绿站，直接到边缘站下再上
-        steps.push(`第 2 步：继续行驶，在 <b>${edgeStation}</b> 下高速，原地掉头重刷 ETC 再上`);
+        // 起点是绿站，直接到中转点下再上
+        steps.push(`第 2 步：继续行驶，在 <b>${transferStation.name}</b>（${transferStation.cat === 'R' ? '红站' : '绿站'}）下高速，原地掉头重刷 ETC 再上`);
       }
-      
+
       steps.push(`第 ${steps.length + 1} 步：直达 <b>${d}</b> 下站`);
 
       planHtml = `
@@ -610,18 +651,7 @@ async function analyzeNational() {
         </div>
         <div class="plan-steps">
           ${steps.map(p => `<div class="step">${p}</div>`).join('')}
-          <div class="transfer-note">⏱️ 每次中转约 3~5 分钟 · 全程 ETC 免费段约 ${Math.round(totalKm*0.35)} km</div>
-        </div>
-      </div>`;
-    } else {
-      planHtml = `
-      <div class="result-card result-warn">
-        <div class="result-header">
-          <div class="result-title">该路线不经过免费圈</div>
-        </div>
-        <div class="result-reason">
-          起点：${geoO.formatted} · 终点：${geoD.formatted}<br>
-          全程约 ${totalKm} km · 正常 ETC 收费。
+          <div class="transfer-note">⏱️ 每次中转约 3~5 分钟</div>
         </div>
       </div>`;
     }
