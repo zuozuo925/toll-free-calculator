@@ -744,7 +744,22 @@ function renderResult() {
     return;
   }
 
-  const recommendGs = [RECOMMEND_G.north[0], RECOMMEND_G.north[1]];
+  // 根据终点位置智能推荐G站方向
+  // 东边（开封方向）→ 推荐东边G站；北边（新乡方向）→ 北边G站；其他→ 默认东边
+  let recommendGList;
+  if (endStation.lng >= 113.95) {
+    // 终点在东边（开封/商丘方向）
+    recommendGList = RECOMMEND_G.east;
+  } else if (endStation.lat >= 34.82) {
+    // 终点在北边（新乡/安阳方向）
+    recommendGList = RECOMMEND_G.north;
+  } else if (endStation.lat <= 34.65) {
+    // 终点在南边（许昌/漯河方向）
+    recommendGList = RECOMMEND_G.south;
+  } else {
+    recommendGList = RECOMMEND_G.east;
+  }
+  const recommendGs = [recommendGList[0], recommendGList[1]];
   const gNames = recommendGs.map(gid => {
     const g = G_STATIONS.find(s => s.id === gid);
     return g ? g.name : '';
